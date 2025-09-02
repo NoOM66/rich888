@@ -54,20 +54,20 @@
 ```mermaid
 graph TD
     subgraph "Phase 1: Discovery & Planning"
-        A[📊 Mary <br> Business Analyst] -->|Market Research, Briefs, User Req.| B[📋 John <br> Product Manager]
-        B -->|PRD, Roadmap, Feature Priority| C[📝 Sarah <br> Product Owner]
-        B -->|PRD, Roadmap, Feature Priority| D[🏗️ Winston <br> Architect]
-        E[🎨 Sally <br> UX Expert] -->|Wireframes, Mockups, UI Specs| C
-        E -->|Wireframes, Mockups, UI Specs| F[💻 James <br> Full Stack Developer]
+        A[📊 Mary <br> Business Analyst] -->|"เอกสารวิจัยตลาด, เอกสารวิเคราะห์คู่แข่ง,<br>สรุปโครงการ (Project Briefs),<br>และข้อกำหนดของผู้ใช้ (User Requirements)"| B[📋 John <br> Product Manager]
+        B -->|"เอกสารข้อกำหนดผลิตภัณฑ์ (PRD),<br>แผนการดำเนินงาน (Roadmap),<br>และการจัดลำดับความสำคัญของฟีเจอร์"| C[📝 Sarah <br> Product Owner]
+        B -->|"เอกสารข้อกำหนดผลิตภัณฑ์ (PRD),<br>แผนการดำเนินงาน (Roadmap),<br>และการจัดลำดับความสำคัญของฟีเจอร์"| D[🏗️ Winston <br> Architect]
+        E[🎨 Sally <br> UX Expert] -->|"Wireframes, Mockups, Prototypes,<br>และข้อกำหนด UI"| C
+        E -->|"Wireframes, Mockups, Prototypes,<br>และข้อกำหนด UI"| F[💻 James <br> Full Stack Developer]
     end
 
     subgraph "Phase 2: Development & Iteration"
-        C -->|User Stories, AC, Backlog| F
-        D -->|Architecture, Tech Specs, API Design| F
-        F -->|Runnable Software, Code, Unit Tests| G[🧪 Quinn <br> Test Architect]
-        G -->|Bug Reports, Test Results| F
-        G -->|Quality Analysis Reports| C
-        G -->|Quality Analysis Reports| B
+        C -->|"User Stories, เกณฑ์การยอมรับ (AC),<br>และ Backlog ที่จัดลำดับความสำคัญแล้ว"| F
+        D -->|"แผนภาพสถาปัตยกรรม, ข้อกำหนดทางเทคนิค,<br>และการออกแบบ API"| F
+        F -->|"ซอฟต์แวร์ที่ทำงานได้, โค้ด,<br>และ Unit Tests"| G[🧪 Quinn <br> Test Architect]
+        G -->|"รายงานข้อผิดพลาด (Bug Reports),<br>กรณีทดสอบ (Test Cases)"| F
+        G -->|"รายงานการวิเคราะห์คุณภาพ"| C
+        G -->|"รายงานการวิเคราะห์คุณภาพ"| B
     end
 
     subgraph "Agile Facilitation"
