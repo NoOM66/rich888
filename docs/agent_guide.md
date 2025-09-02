@@ -63,6 +63,7 @@ graph TD
 
     subgraph "Phase 2: Development & Iteration"
         C -->|"User Stories, เกณฑ์การยอมรับ (AC),<br>และ Backlog ที่จัดลำดับความสำคัญแล้ว"| F
+        C -->|"User Stories & Backlog for Planning"| H[🏃 Bob <br> Scrum Master]
         D -->|"แผนภาพสถาปัตยกรรม, ข้อกำหนดทางเทคนิค,<br>และการออกแบบ API"| F
         F -->|"ซอฟต์แวร์ที่ทำงานได้, โค้ด,<br>และ Unit Tests"| G[🧪 Quinn <br> Test Architect]
         G -->|"รายงานข้อผิดพลาด (Bug Reports),<br>กรณีทดสอบ (Test Cases)"| F
@@ -71,10 +72,9 @@ graph TD
     end
 
     subgraph "Agile Facilitation"
-         H[🏃 Bob <br> Scrum Master]
-         H -.-> C
-         H -.-> F
-         H -.-> G
+         H -->|"แผนการ Sprint, Burndown Charts,<br>Retrospective Action Items"| C
+         H -->|"แผนการ Sprint, Burndown Charts,<br>Retrospective Action Items"| F
+         H -->|"แผนการ Sprint, Burndown Charts,<br>Retrospective Action Items"| G
          style H fill:#eee,stroke:#333,stroke-width:2px
     end
 
