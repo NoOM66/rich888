@@ -54,20 +54,20 @@
 ```mermaid
 graph TD
     subgraph "Phase 1: Discovery & Planning"
-        A[📊 Mary <br> Business Analyst] -->|Research & Briefs| B[📋 John <br> Product Manager]
-        B -->|PRD & Roadmap| C[📝 Sarah <br> Product Owner]
-        B -->|PRD & Roadmap| D[🏗️ Winston <br> Architect]
-        E[🎨 Sally <br> UX Expert] -->|Wireframes & UI Specs| C
-        E -->|Wireframes & UI Specs| F[💻 James <br> Full Stack Developer]
+        A[📊 Mary <br> Business Analyst] -->|Market Research, Briefs, User Req.| B[📋 John <br> Product Manager]
+        B -->|PRD, Roadmap, Feature Priority| C[📝 Sarah <br> Product Owner]
+        B -->|PRD, Roadmap, Feature Priority| D[🏗️ Winston <br> Architect]
+        E[🎨 Sally <br> UX Expert] -->|Wireframes, Mockups, UI Specs| C
+        E -->|Wireframes, Mockups, UI Specs| F[💻 James <br> Full Stack Developer]
     end
 
     subgraph "Phase 2: Development & Iteration"
-        C -->|User Stories & Backlog| F
-        D -->|Architecture Diagrams| F
-        F -->|Working Software & Code| G[🧪 Quinn <br> Test Architect]
-        G -->|Bug Reports & Feedback| F
-        G -->|Quality Status Reports| C
-        G -->|Quality Status Reports| B
+        C -->|User Stories, AC, Backlog| F
+        D -->|Architecture, Tech Specs, API Design| F
+        F -->|Runnable Software, Code, Unit Tests| G[🧪 Quinn <br> Test Architect]
+        G -->|Bug Reports, Test Results| F
+        G -->|Quality Analysis Reports| C
+        G -->|Quality Analysis Reports| B
     end
 
     subgraph "Agile Facilitation"
