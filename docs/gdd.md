@@ -113,7 +113,7 @@
 
 ## 6. แบบจำลองข้อมูล (Data Model)
 
-อ้างอิงจาก `no-time-to-relax-design.md` และปรับปรุงเพื่อรวมกลไกเงินเฟ้อ:
+อ้างอิงจากโครงสร้างข้อมูลพื้นฐานใน [no-time-to-relax-design.md#10-แบบจำลองข้อมูล-data-model](no-time-to-relax-design.md#10-แบบจำลองข้อมูล-data-model) ซึ่งเป็นฐานข้อมูลเริ่มต้น และได้ปรับปรุงเพื่อรวมกลไกเงินเฟ้อ:
 
 ```json
 {
@@ -186,7 +186,7 @@
 
 ## 7. ขั้นตอนการทำงานต่อสัปดาห์ (Game Loop Pseudocode)
 
-อ้างอิงจาก `no-time-to-relax-design.md` และปรับปรุงเพื่อรวมกลไกเงินเฟ้อและระบบเสริม:
+อ้างอิงจาก Pseudocode พื้นฐานใน [no-time-to-relax-design.md#11-ขั้นตอนการทำงานต่อสัปดาห์-game-loop-pseudocode](no-time-to-relax-design.md#11-ขั้นตอนการทำงานต่อสัปดาห์-game-loop-pseudocode) ซึ่งเป็นขั้นตอนการทำงานหลัก และได้ปรับปรุงเพื่อรวมกลไกเงินเฟ้อและระบบเสริม:
 
 ```pseudo
 function start_week(player, rules):
