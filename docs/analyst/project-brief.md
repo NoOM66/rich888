@@ -126,9 +126,4 @@
 - การวิจัยพฤติกรรมผู้เล่นเพื่อปรับสมดุลเกม
 
 ## Next Steps
-### Immediate Actions
-1. สร้างเอกสารออกแบบเกม (GDD) โดยละเอียดจาก Project Brief นี้
-2. เริ่มออกแบบ Data Schema และ Pseudocode สำหรับ MVP
-3. เริ่มออกแบบ UI/UX Mockups
-### PM Handoff
-This Project Brief provides the full context for "เกมเรียนรู้ภาวะเงินเฟ้อ". Please start in 'PRD Generation Mode', review the brief thoroughly to work with the user to create the PRD section by section as the template indicates, asking for any necessary clarification or suggesting improvements.
+ส่งต่อให้: Alex (Game Designer)
