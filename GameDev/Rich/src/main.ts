@@ -5,12 +5,17 @@ import { PlayerStatsController } from './PlayerStatsController';
 import { StatType } from './StatType';
 import { SaveLoadManager } from './SaveLoadManager';
 import { GlobalEventEmitter } from './GlobalEventEmitter';
+import { InflationManager } from './InflationManager';
+import { BankingManager } from './BankingManager';
+import { Loan } from './Loan';
 
 class MainScene extends Phaser.Scene {
   private gameManager: GameManager;
   private turnManager: TurnManager;
   private playerStatsController: PlayerStatsController;
   private saveLoadManager: SaveLoadManager;
+  private inflationManager: InflationManager;
+  private bankingManager: BankingManager;
 
   private stateText!: Phaser.GameObjects.Text;
   private weekText!: Phaser.GameObjects.Text;
@@ -20,6 +25,9 @@ class MainScene extends Phaser.Scene {
   private happinessText!: Phaser.GameObjects.Text;
   private educationText!: Phaser.GameObjects.Text;
   private stressText!: Phaser.GameObjects.Text;
+  private inflationText!: Phaser.GameObjects.Text;
+  private bankBalanceText!: Phaser.GameObjects.Text;
+  private loanText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -27,12 +35,16 @@ class MainScene extends Phaser.Scene {
     this.turnManager = TurnManager.instance;
     this.playerStatsController = PlayerStatsController.instance;
     this.saveLoadManager = SaveLoadManager.instance;
+    this.inflationManager = InflationManager.instance;
+    this.bankingManager = BankingManager.instance;
 
     // Make Managers globally accessible for Playwright E2E tests
     (window as any).GameManager = this.gameManager;
     (window as any).TurnManager = this.turnManager;
     (window as any).PlayerStatsController = this.playerStatsController;
     (window as any).SaveLoadManager = this.saveLoadManager;
+    (window as any).InflationManager = this.inflationManager;
+    (window as any).BankingManager = this.bankingManager;
   }
 
   preload() {
@@ -55,12 +67,21 @@ class MainScene extends Phaser.Scene {
       color: '#ffffff'
     }).setOrigin(0.5);
 
+    this.inflationText = this.add.text(400, 200, `Inflation: ${this.inflationManager.CurrentInflationRate * 100}%`, {
+      fontSize: '24px',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
     // Player Stats UI
     this.moneyText = this.add.text(100, 250, '', { fontSize: '20px', color: '#ffffff' });
     this.healthText = this.add.text(100, 280, '', { fontSize: '20px', color: '#ffffff' });
     this.happinessText = this.add.text(100, 310, '', { fontSize: '20px', color: '#ffffff' });
     this.educationText = this.add.text(100, 340, '', { fontSize: '20px', color: '#ffffff' });
     this.stressText = this.add.text(100, 370, '', { fontSize: '20px', color: '#ffffff' });
+
+    // Banking UI
+    this.bankBalanceText = this.add.text(500, 250, '', { fontSize: '20px', color: '#ffffff' });
+    this.loanText = this.add.text(500, 280, '', { fontSize: '20px', color: '#ffffff' });
 
     this.add.text(400, 450, 'Click to change game state', {
       fontSize: '32px',
@@ -109,12 +130,49 @@ class MainScene extends Phaser.Scene {
       padding: 8
     }).setOrigin(0.5).setInteractive();
 
+    const depositButton = this.add.text(100, 400, 'Deposit 100', {
+      fontSize: '20px',
+      color: '#00ff00',
+      backgroundColor: '#333333',
+      padding: 8
+    }).setOrigin(0.5).setInteractive();
+
+    const withdrawButton = this.add.text(300, 400, 'Withdraw 50', {
+      fontSize: '20px',
+      color: '#ff0000',
+      backgroundColor: '#333333',
+      padding: 8
+    }).setOrigin(0.5).setInteractive();
+
+    const takeLoanButton = this.add.text(500, 400, 'Take Loan 1000', {
+      fontSize: '20px',
+      color: '#00ffff',
+      backgroundColor: '#333333',
+      padding: 8
+    }).setOrigin(0.5).setInteractive();
+
+    const payLoanButton = this.add.text(700, 400, 'Pay Loan', {
+      fontSize: '20px',
+      color: '#ff8800',
+      backgroundColor: '#333333',
+      padding: 8
+    }).setOrigin(0.5).setInteractive();
+
     // Subscribe to global events
     GlobalEventEmitter.instance.on('onGameStateChanged', this.handleGameStateChange, this);
     GlobalEventEmitter.instance.on('onWeekStart', this.handleWeekStart, this);
     GlobalEventEmitter.instance.on('onWeekEnd', this.handleWeekEnd, this);
     GlobalEventEmitter.instance.on('onStatChanged', this.handleStatChanged, this);
     GlobalEventEmitter.instance.on('onPlayerLost', this.handlePlayerLost, this);
+    GlobalEventEmitter.instance.on('onInflationChanged', this.handleInflationChanged, this);
+    GlobalEventEmitter.instance.on('onDeposit', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onWithdrawal', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onLoanTaken', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onLoanPaymentMade', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onMissedPayment', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onLoanFullyPaid', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onLoanPenaltyApplied', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.on('onBankruptcy', this.handleBankingEvent, this);
 
     // Add click listener to change game state for demonstration
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -124,7 +182,11 @@ class MainScene extends Phaser.Scene {
           pointer.event.target !== addMoneyButton.canvas &&
           pointer.event.target !== decreaseHealthButton.canvas &&
           pointer.event.target !== saveGameButton.canvas &&
-          pointer.event.target !== loadGameButton.canvas) {
+          pointer.event.target !== loadGameButton.canvas &&
+          pointer.event.target !== depositButton.canvas &&
+          pointer.event.target !== withdrawButton.canvas &&
+          pointer.event.target !== takeLoanButton.canvas &&
+          pointer.event.target !== payLoanButton.canvas) {
         switch (this.gameManager.CurrentState) {
           case GameState.MainMenu:
             this.gameManager.startGame();
@@ -175,11 +237,52 @@ class MainScene extends Phaser.Scene {
       this.saveLoadManager.loadGame();
       this.updateTurnUI();
       this.updatePlayerStatsUI();
+      this.updateInflationUI();
+      this.updateBankingUI();
+    });
+
+    depositButton.on('pointerdown', () => {
+      if (this.gameManager.CurrentState === GameState.GamePlaying) {
+        this.bankingManager.deposit(100);
+      } else {
+        console.warn('Can only deposit in GamePlaying state.');
+      }
+    });
+
+    withdrawButton.on('pointerdown', () => {
+      if (this.gameManager.CurrentState === GameState.GamePlaying) {
+        this.bankingManager.withdraw(50);
+      } else {
+        console.warn('Can only withdraw in GamePlaying state.');
+      }
+    });
+
+    takeLoanButton.on('pointerdown', () => {
+      if (this.gameManager.CurrentState === GameState.GamePlaying) {
+        this.bankingManager.takeLoan(1000);
+      } else {
+        console.warn('Can only take loan in GamePlaying state.');
+      }
+    });
+
+    payLoanButton.on('pointerdown', () => {
+      if (this.gameManager.CurrentState === GameState.GamePlaying) {
+        const loans = this.playerStatsController.getPlayerData().activeLoans;
+        if (loans.length > 0) {
+          this.bankingManager.makeLoanPayment(loans[0], loans[0].paymentAmount);
+        } else {
+          console.warn('No active loans to pay.');
+        }
+      } else {
+        console.warn('Can only pay loan in GamePlaying state.');
+      }
     });
 
     // Initial UI update
     this.updateTurnUI();
     this.updatePlayerStatsUI();
+    this.updateInflationUI();
+    this.updateBankingUI();
   }
 
   private handleGameStateChange(newState: GameState): void {
@@ -187,12 +290,16 @@ class MainScene extends Phaser.Scene {
     this.stateText.setText(`Current State: ${GameState[newState]}`);
     this.updateTurnUI();
     this.updatePlayerStatsUI();
+    this.updateInflationUI();
+    this.updateBankingUI();
   }
 
   private handleWeekStart(week: number): void {
     console.log(`Event: Week ${week} started.`);
     this.updateTurnUI();
     this.updatePlayerStatsUI();
+    this.updateInflationUI();
+    this.updateBankingUI();
   }
 
   private handleWeekEnd(week: number): void {
@@ -210,6 +317,16 @@ class MainScene extends Phaser.Scene {
     // GameManager will handle the state change to GameOver
   }
 
+  private handleInflationChanged(newInflationRate: number): void {
+    console.log(`Event: Inflation changed to ${newInflationRate * 100}%.`);
+    this.updateInflationUI();
+  }
+
+  private handleBankingEvent(...args: any[]): void {
+    // Generic handler for banking events to trigger UI update
+    this.updateBankingUI();
+  }
+
   private updateTurnUI(): void {
     this.weekText.setText(`Week: ${this.turnManager.currentWeek}`);
     this.budgetText.setText(`Time Budget: ${this.turnManager.timeBudget} hours`);
@@ -224,6 +341,21 @@ class MainScene extends Phaser.Scene {
     this.stressText.setText(`Stress: ${playerData.stress}`);
   }
 
+  private updateInflationUI(): void {
+    this.inflationText.setText(`Inflation: ${this.inflationManager.CurrentInflationRate * 100}%`);
+  }
+
+  private updateBankingUI(): void {
+    const playerData = this.playerStatsController.getPlayerData();
+    this.bankBalanceText.setText(`Bank: ${playerData.bankBalance.toFixed(2)}`);
+    if (playerData.activeLoans.length > 0) {
+      const loan = playerData.activeLoans[0]; // Display first loan for simplicity
+      this.loanText.setText(`Loan: ${loan.remainingAmount.toFixed(2)} (${loan.remainingPayments} payments)`);
+    } else {
+      this.loanText.setText('No Loans');
+    }
+  }
+
   // Don't forget to clean up event listeners when the scene is destroyed
   destroy() {
     // Unsubscribe from global events
@@ -232,6 +364,15 @@ class MainScene extends Phaser.Scene {
     GlobalEventEmitter.instance.off('onWeekEnd', this.handleWeekEnd, this);
     GlobalEventEmitter.instance.off('onStatChanged', this.handleStatChanged, this);
     GlobalEventEmitter.instance.off('onPlayerLost', this.handlePlayerLost, this);
+    GlobalEventEmitter.instance.off('onInflationChanged', this.handleInflationChanged, this);
+    GlobalEventEmitter.instance.off('onDeposit', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onWithdrawal', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onLoanTaken', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onLoanPaymentMade', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onMissedPayment', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onLoanFullyPaid', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onLoanPenaltyApplied', this.handleBankingEvent, this);
+    GlobalEventEmitter.instance.off('onBankruptcy', this.handleBankingEvent, this);
   }
 }
 

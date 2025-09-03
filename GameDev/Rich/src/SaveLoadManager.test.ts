@@ -24,7 +24,7 @@ Object.defineProperty(window, 'localStorage', {
 jest.mock('./PlayerStatsController', () => ({
   PlayerStatsController: {
     instance: {
-      getPlayerData: jest.fn(() => ({ ...DefaultPlayerData, money: 1000, health: 100, happiness: 100, education: 0, stress: 0 })),
+      getPlayerData: jest.fn(() => ({ ...DefaultPlayerData, money: 1000, health: 100, happiness: 100, education: 0, stress: 0, bankBalance: 0, activeLoans: [] })),
       loadPlayerData: jest.fn(),
     },
   },
@@ -64,7 +64,7 @@ describe('SaveLoadManager', () => {
     turnManagerMock = TurnManager.instance;
 
     // Reset mock data for PlayerStatsController and TurnManager
-    (playerStatsControllerMock.getPlayerData as jest.Mock).mockReturnValue({ ...DefaultPlayerData, money: 1000, health: 100, happiness: 100, education: 0, stress: 0 });
+    (playerStatsControllerMock.getPlayerData as jest.Mock).mockReturnValue({ ...DefaultPlayerData, money: 1000, health: 100, happiness: 100, education: 0, stress: 0, bankBalance: 0, activeLoans: [] });
     turnManagerMock.currentWeek = 0;
     turnManagerMock.timeBudget = 168;
   });
@@ -79,7 +79,7 @@ describe('SaveLoadManager', () => {
     saveLoadManager.saveGame();
 
     const expectedSaveData: GameSaveData = {
-      playerData: { ...DefaultPlayerData, money: 1000, health: 100, happiness: 100, education: 0, stress: 0 },
+      playerData: { ...DefaultPlayerData, money: 1000, health: 100, happiness: 100, education: 0, stress: 0, bankBalance: 0, activeLoans: [] },
       currentWeek: 0,
     };
 
@@ -88,7 +88,7 @@ describe('SaveLoadManager', () => {
 
   it('should load game data from localStorage', () => {
     const savedData: GameSaveData = {
-      playerData: { money: 2000, health: 50, happiness: 60, education: 70, stress: 30 },
+      playerData: { money: 2000, health: 50, happiness: 60, education: 70, stress: 30, bankBalance: 100, activeLoans: [] },
       currentWeek: 5,
     };
     localStorageMock.setItem(saveLoadManager['SAVE_KEY'], JSON.stringify(savedData));

@@ -50,6 +50,8 @@ describe('PlayerStatsController', () => {
       happiness: 80,
       education: 50,
       stress: 20,
+      bankBalance: 1000, // Added
+      activeLoans: [],   // Added
     };
     playerStatsController.loadPlayerData(testData);
     expect(playerStatsController.getPlayerData()).toEqual(testData);

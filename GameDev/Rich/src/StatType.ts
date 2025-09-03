@@ -4,4 +4,5 @@ export enum StatType {
   Happiness = 'happiness',
   Education = 'education',
   Stress = 'stress',
+  BankBalance = 'bankBalance',
 }
