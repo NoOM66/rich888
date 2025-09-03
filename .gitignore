@@ -76,3 +76,8 @@ Thumbs.db
 
 # Local History for Unity
 # Library/UnityPackageManager/LocalHistory/
+
+# Phaser/TypeScript specific ignores
+GameDev/Rich/node_modules/
+GameDev/Rich/dist/
+GameDev/Rich/npm_start_output.log
