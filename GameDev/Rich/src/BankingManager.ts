@@ -5,7 +5,7 @@ import { Loan } from './Loan';
 import { TurnManager } from './TurnManager';
 import { GameManager, GameState } from './GameManager'; // Import GameManager and GameState
 
-class BankingManager {
+export class BankingManager {
     private static instance: BankingManager;
     private weekCounter: number = 0;
     private readonly INTEREST_CALCULATION_INTERVAL: number = 4;

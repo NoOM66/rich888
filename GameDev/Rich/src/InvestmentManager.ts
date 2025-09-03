@@ -5,7 +5,7 @@ import { InflationManager } from './InflationManager';
 import { TurnManager } from './TurnManager';
 import { InvestmentAssets } from './InvestmentAssetsData';
 
-class InvestmentManager {
+export class InvestmentManager {
     private static instance: InvestmentManager;
     private currentMarketPrices: { [assetId: string]: number } = {}; // To store current market prices
 

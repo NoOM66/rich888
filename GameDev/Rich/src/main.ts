@@ -8,8 +8,10 @@ import { GlobalEventEmitter } from './GlobalEventEmitter';
 import { InflationManager } from './InflationManager';
 import { BankingManager } from './BankingManager';
 import { Loan } from './Loan';
+import { UIScene } from './scenes/UIScene';
+import { FinancialDashboardScene } from './scenes/FinancialDashboardScene';
 
-class MainScene extends Phaser.Scene {
+export class MainScene extends Phaser.Scene {
   private gameManager: GameManager;
   private turnManager: TurnManager;
   private playerStatsController: PlayerStatsController;
@@ -37,14 +39,6 @@ class MainScene extends Phaser.Scene {
     this.saveLoadManager = SaveLoadManager.instance;
     this.inflationManager = InflationManager.instance;
     this.bankingManager = BankingManager.instance;
-
-    // Make Managers globally accessible for Playwright E2E tests
-    (window as any).GameManager = this.gameManager;
-    (window as any).TurnManager = this.turnManager;
-    (window as any).PlayerStatsController = this.playerStatsController;
-    (window as any).SaveLoadManager = this.saveLoadManager;
-    (window as any).InflationManager = this.inflationManager;
-    (window as any).BankingManager = this.bankingManager;
   }
 
   preload() {
@@ -157,6 +151,31 @@ class MainScene extends Phaser.Scene {
       backgroundColor: '#333333',
       padding: 8
     }).setOrigin(0.5).setInteractive();
+
+    // Add buttons to open UIScene and FinancialDashboardScene
+    const openUISceneButton = this.add.text(200, 600, 'Open UI Scene', {
+      fontSize: '24px',
+      color: '#00ff00',
+      backgroundColor: '#333333',
+      padding: 10
+    }).setOrigin(0.5).setInteractive();
+
+    const openFinancialDashboardButton = this.add.text(600, 600, 'Open Financial Dashboard', {
+      fontSize: '24px',
+      color: '#00ff00',
+      backgroundColor: '#333333',
+      padding: 10
+    }).setOrigin(0.5).setInteractive();
+
+    openUISceneButton.on('pointerdown', async () => {
+      await GameManager.instance.loadUIScene();
+      this.scene.launch('UIScene'); // Use launch to run alongside MainScene
+    });
+
+    openFinancialDashboardButton.on('pointerdown', async () => {
+      await GameManager.instance.loadFinancialDashboardScene();
+      this.scene.launch('FinancialDashboardScene'); // Use launch to run alongside MainScene
+    });
 
     // Subscribe to global events
     GlobalEventEmitter.instance.on('onGameStateChanged', this.handleGameStateChange, this);
@@ -386,8 +405,9 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { x: 0, y: 0 }
     }
   },
-  scene: MainScene,
+  scene: [MainScene, UIScene, FinancialDashboardScene],
   backgroundColor: '#333333'
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+GameManager.instance.setGameInstance(game);
