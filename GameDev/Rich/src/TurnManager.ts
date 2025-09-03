@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { GameManager, GameState } from './GameManager';
+import { GlobalEventEmitter } from './GlobalEventEmitter';
 
 class TurnManager {
   private static _instance: TurnManager;
-  private eventEmitter: Phaser.Events.EventEmitter;
 
   public currentWeek: number;
   public timeBudget: number;
@@ -18,12 +18,11 @@ class TurnManager {
   }
 
   private constructor() {
-    this.eventEmitter = new Phaser.Events.EventEmitter();
     this.currentWeek = 0;
     this.timeBudget = this.DEFAULT_WEEKLY_BUDGET;
 
-    // Listen to GameManager state changes
-    GameManager.instance.on('onGameStateChanged', this.handleGameStateChange, this);
+    // Listen to GameManager state changes via GlobalEventEmitter
+    GlobalEventEmitter.instance.on('onGameStateChanged', this.handleGameStateChange, this);
 
     console.log('TurnManager initialized.');
   }
@@ -38,12 +37,12 @@ class TurnManager {
   public startNewWeek(): void {
     this.currentWeek++;
     this.timeBudget = this.DEFAULT_WEEKLY_BUDGET;
-    this.eventEmitter.emit('onWeekStart', this.currentWeek);
+    GlobalEventEmitter.instance.emit('onWeekStart', this.currentWeek);
     console.log(`Week ${this.currentWeek} started. Time Budget: ${this.timeBudget} hours.`);
   }
 
   public endCurrentWeek(): void {
-    this.eventEmitter.emit('onWeekEnd', this.currentWeek);
+    GlobalEventEmitter.instance.emit('onWeekEnd', this.currentWeek);
     console.log(`Week ${this.currentWeek} ended.`);
     this.startNewWeek(); // Automatically start new week after current one ends
   }
@@ -64,14 +63,14 @@ class TurnManager {
     }
   }
 
-  // Event listener methods (delegated from EventEmitter)
+  // Event listener methods (delegated from GlobalEventEmitter)
   public on(event: string | symbol, fn: Function, context?: any): this {
-    this.eventEmitter.on(event, fn, context);
+    GlobalEventEmitter.instance.on(event, fn, context);
     return this;
   }
 
   public off(event: string | symbol, fn?: Function, context?: any, once?: boolean): this {
-    this.eventEmitter.off(event, fn, context, once);
+    GlobalEventEmitter.instance.off(event, fn, context, once);
     return this;
   }
 }

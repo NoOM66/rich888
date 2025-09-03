@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { GlobalEventEmitter } from './GlobalEventEmitter';
 
 enum GameState {
   MainMenu,
@@ -10,7 +11,6 @@ enum GameState {
 class GameManager {
   private static _instance: GameManager;
   private _currentState: GameState;
-  private eventEmitter: Phaser.Events.EventEmitter;
 
   public static get instance(): GameManager {
     if (!GameManager._instance) {
@@ -20,7 +20,6 @@ class GameManager {
   }
 
   private constructor() {
-    this.eventEmitter = new Phaser.Events.EventEmitter();
     this._currentState = GameState.MainMenu; // Initial state
     console.log('GameManager initialized. Initial state:', GameState[this._currentState]);
   }
@@ -37,7 +36,7 @@ class GameManager {
 
     console.log('Changing state from', GameState[this._currentState], 'to', GameState[newState]);
     this._currentState = newState;
-    this.eventEmitter.emit('onGameStateChanged', this._currentState);
+    GlobalEventEmitter.instance.emit('onGameStateChanged', this._currentState);
   }
 
   // Public functions for state changes
@@ -64,17 +63,6 @@ class GameManager {
 
   public gameOver(): void {
     this.changeState(GameState.GameOver);
-  }
-
-  // Event listener methods
-  public on(event: string | symbol, fn: Function, context?: any): this {
-    this.eventEmitter.on(event, fn, context);
-    return this;
-  }
-
-  public off(event: string | symbol, fn?: Function, context?: any, once?: boolean): this {
-    this.eventEmitter.off(event, fn, context, once);
-    return this;
   }
 }
 

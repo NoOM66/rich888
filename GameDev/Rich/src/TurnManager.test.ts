@@ -1,18 +1,14 @@
 import { TurnManager } from './TurnManager';
 import { GameManager, GameState } from './GameManager';
+import { GlobalEventEmitter } from './GlobalEventEmitter';
 
-// Mock GameManager and its event emitter
+// Mock GameManager
 jest.mock('./GameManager', () => {
   const actualGameManager = jest.requireActual('./GameManager');
-  // Create a mock instance that has a writable CurrentState
   const mockGameManagerInstance = {
-    on: jest.fn(),
-    off: jest.fn(),
-    emit: jest.fn(),
-    // Use a simple property for CurrentState in the mock
+    gameOver: jest.fn(),
     CurrentState: actualGameManager.GameState.MainMenu,
   };
-
   return {
     ...actualGameManager,
     GameManager: {
@@ -24,10 +20,8 @@ jest.mock('./GameManager', () => {
 describe('TurnManager', () => {
   let turnManager: TurnManager;
   let gameManagerMock: {
-    on: jest.Mock;
-    off: jest.Mock;
-    emit: jest.Mock;
-    CurrentState: GameState; // Explicitly type as writable
+    gameOver: jest.Mock;
+    CurrentState: GameState;
   };
   let onGameStateChangedCallback: Function; // To store the callback
 
@@ -46,9 +40,10 @@ describe('TurnManager', () => {
     // Instantiate TurnManager AFTER GameManager mock is ready
     turnManager = TurnManager.instance;
 
-    // Capture the callback registered with GameManager.instance.on
-    // This assumes 'on' is called once in the constructor
-    onGameStateChangedCallback = gameManagerMock.on.mock.calls[0][1];
+    // Capture the callback registered with GlobalEventEmitter.instance.on for onGameStateChanged
+    // This assumes 'on' is called once in the constructor of TurnManager
+    const globalEventEmitterOnMock = GlobalEventEmitter.instance.on as jest.Mock;
+    onGameStateChangedCallback = globalEventEmitterOnMock.mock.calls.find(call => call[0] === 'onGameStateChanged')[1];
   });
 
   it('should be a singleton', () => {
@@ -63,7 +58,7 @@ describe('TurnManager', () => {
   });
 
   it('should start a new week correctly', () => {
-    const emitSpy = jest.spyOn(turnManager['eventEmitter'], 'emit');
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit');
 
     turnManager.startNewWeek();
     expect(turnManager.currentWeek).toBe(1);
@@ -72,7 +67,7 @@ describe('TurnManager', () => {
   });
 
   it('should end current week and start a new one', () => {
-    const emitSpy = jest.spyOn(turnManager['eventEmitter'], 'emit');
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit');
 
     // Simulate some time spent in week 0
     turnManager.trySpendTime(50);
@@ -108,7 +103,7 @@ describe('TurnManager', () => {
   });
 
   it('should start first week when GameManager enters GamePlaying state', () => {
-    const emitSpy = jest.spyOn(turnManager['eventEmitter'], 'emit');
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit');
 
     // Simulate GameManager changing state to GamePlaying
     onGameStateChangedCallback.call(turnManager, GameState.GamePlaying);
@@ -119,7 +114,7 @@ describe('TurnManager', () => {
   });
 
   it('should not start new week if already in a week when GameManager enters GamePlaying state', () => {
-    const emitSpy = jest.spyOn(turnManager['eventEmitter'], 'emit');
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit');
 
     turnManager.startNewWeek(); // Manually start week 1
     emitSpy.mockClear();

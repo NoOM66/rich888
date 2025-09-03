@@ -1,4 +1,5 @@
 import { GameManager, GameState } from './GameManager';
+import { GlobalEventEmitter } from './GlobalEventEmitter';
 
 describe('GameManager', () => {
   let gameManager: GameManager;
@@ -31,7 +32,7 @@ describe('GameManager', () => {
   });
 
   it('should emit onGameStateChanged event when state changes', () => {
-    const emitSpy = jest.spyOn(gameManager['eventEmitter'], 'emit'); // Spy on the internal eventEmitter's emit method
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit'); // Spy on GlobalEventEmitter
 
     gameManager.changeState(GameState.GamePlaying);
     expect(emitSpy).toHaveBeenCalledWith('onGameStateChanged', GameState.GamePlaying);
@@ -43,14 +44,14 @@ describe('GameManager', () => {
   });
 
   it('should not emit event if state does not change', () => {
-    const emitSpy = jest.spyOn(gameManager['eventEmitter'], 'emit'); // Spy on the internal eventEmitter's emit method
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit'); // Spy on GlobalEventEmitter
 
     gameManager.changeState(GameState.MainMenu); // Already in MainMenu
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
   it('should handle specific state change functions', () => {
-    const emitSpy = jest.spyOn(gameManager['eventEmitter'], 'emit'); // Spy on the internal eventEmitter's emit method
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit'); // Spy on GlobalEventEmitter
 
     gameManager.startGame();
     expect(gameManager.CurrentState).toBe(GameState.GamePlaying);
@@ -78,7 +79,7 @@ describe('GameManager', () => {
   });
 
   it('should not resume game if not in Paused state', () => {
-    const emitSpy = jest.spyOn(gameManager['eventEmitter'], 'emit'); // Spy on the internal eventEmitter's emit method
+    const emitSpy = jest.spyOn(GlobalEventEmitter.instance, 'emit'); // Spy on GlobalEventEmitter
 
     gameManager.startGame(); // GamePlaying
     expect(gameManager.CurrentState).toBe(GameState.GamePlaying);
