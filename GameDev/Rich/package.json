@@ -1,15 +1,21 @@
 {
-  "name": "rich888-gamedev",
-  "version": "0.0.0",
+  "name": "rich-core",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "test": "jest --colors --runInBand"
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test --loader ts-node/esm",
+  "lint": "eslint . --ext .ts",
+  "demo": "node --loader ts-node/esm src/demo/weekDemo.ts"
   },
+  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.1.6",
-    "jest": "^29.0.0",
-    "ts-jest": "^29.0.0",
-    "@types/jest": "^29.0.0",
-    "@types/node": "^18.0.0"
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.11.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0"
   }
 }

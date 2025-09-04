@@ -1,0 +1,43 @@
+# STORY-007 Financial Loans & Simple Investments
+
+Context:
+เพิ่มระบบเงินกู้และการลงทุนง่าย ๆ เพื่อเร่ง progression และสร้างภาระจ่ายคืน
+
+Goal:
+สร้าง loan issuance + repayment schedule + basic investment growth (ไม่ซับซ้อน)
+
+Scope (Included):
+- issueLoan(amount, rate, weeks) -> loanId + schedule
+- weeklyRepayment(loanState, weekTick)
+- openInvestment(amount, growthRate)
+- evaluateInvestments(weeksHeld)
+- Overdue: เมื่อเงินไม่พอจ่าย -> mark overdue + เพิ่ม penaltyInterestRate (config)
+- Min holding period สำหรับถอน (1 week)
+
+Out of Scope:
+- Compound complexity beyond (1+rate)^weeks
+- Refinance mechanics
+
+Dependencies:
+- STORY-004 (เงิน), STORY-006 (แข่งขันใช้เงินซื้อ upgrade)
+
+Acceptance Criteria:
+1. issueLoan เพิ่มเงินสด = amount และสร้าง schedule length=weeks
+2. weeklyRepayment หักเงิน และลด remaining principal ตามตาราง
+3. เงินไม่พอ -> mark overdue=true และเพิ่ม interestAccumulated = interestAccumulated + penaltyRate
+4. openInvestment ลดเงินสด amount และบันทึก startWeek
+5. evaluateInvestments หลัง 1 สัปดาห์ -> value > principal (ถ้า rate >0)
+6. พยายามถอนก่อน 1 week -> reject (MIN_HOLDING)
+
+Edge Cases:
+- rate <0 -> treat 0
+- withdraw after many weeks -> compound correct
+
+Definition of Done Checkboxes:
+- [ ] Context
+- [ ] Acceptance Criteria (6)
+- [ ] Dependencies
+- [ ] No ambiguity
+
+Test Notes:
+- test overdue penalty
