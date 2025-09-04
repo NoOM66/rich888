@@ -34,10 +34,10 @@ Edge Cases:
 - Time exhausted mid-loop -> skip rest
 
 Definition of Done Checkboxes:
-- [ ] Context
-- [ ] Acceptance Criteria (6)
-- [ ] No ambiguous words
-- [ ] Dependencies clear
+- [x] Context
+- [x] Acceptance Criteria (6)
+- [x] No ambiguous words
+- [x] Dependencies clear
 
 Test Notes:
 - snapshot test log ordering

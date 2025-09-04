@@ -1,6 +1,7 @@
 /**
  * Time & Turn Management System Foundation (STORY-001)
  */
+import { Result as SharedResult, ok, err } from '../../shared/result.js';
 
 export interface WeekState {
   readonly baseHours: number;
@@ -17,7 +18,7 @@ export interface AllocationError {
   message: string;
 }
 
-export type Result<T> = { ok: true; value: T } | { ok: false; error: AllocationError };
+export type AllocationResult<T> = SharedResult<T, AllocationError>;
 
 const PRECISION = 2;
 function roundHours(h: number): number {
@@ -44,21 +45,16 @@ export function getRemaining(state: WeekState): number {
   return roundHours(state.effectiveHours - (state.spentTravel + state.spentActivity));
 }
 
-function ensureHours(hours: number): Result<number> {
-  if (hours <= 0) {
-    return {
-      ok: false,
-      error: { code: 'NEGATIVE_OR_ZERO_HOURS', message: 'hours must be > 0' },
-    };
-  }
-  return { ok: true, value: roundHours(hours) };
+function ensureHours(hours: number): AllocationResult<number> {
+  if (hours <= 0) return err({ code: 'NEGATIVE_OR_ZERO_HOURS', message: 'hours must be > 0' });
+  return ok(roundHours(hours));
 }
 
 function cloneWith(state: WeekState, changes: Partial<WeekState>): WeekState {
   return Object.freeze({ ...state, ...changes });
 }
 
-function allocate(kind: 'travel' | 'activity', state: WeekState, hours: number): Result<WeekState> {
+function allocate(kind: 'travel' | 'activity', state: WeekState, hours: number): AllocationResult<WeekState> {
   const checked = ensureHours(hours);
   if (!checked.ok) return checked;
   const h = checked.value;
@@ -66,18 +62,15 @@ function allocate(kind: 'travel' | 'activity', state: WeekState, hours: number):
   const newSpentActivity = kind === 'activity' ? state.spentActivity + h : state.spentActivity;
   const total = newSpentTravel + newSpentActivity;
   if (total > state.effectiveHours + 1e-9) {
-    return {
-      ok: false,
-      error: { code: 'OVER_ALLOCATION', message: 'allocation exceeds effective hours' },
-    };
+    return err({ code: 'OVER_ALLOCATION', message: 'allocation exceeds effective hours' });
   }
-  return { ok: true, value: cloneWith(state, { spentTravel: roundHours(newSpentTravel), spentActivity: roundHours(newSpentActivity) }) };
+  return ok(cloneWith(state, { spentTravel: roundHours(newSpentTravel), spentActivity: roundHours(newSpentActivity) }));
 }
 
-export function allocateTravel(state: WeekState, hours: number): Result<WeekState> {
+export function allocateTravel(state: WeekState, hours: number): AllocationResult<WeekState> {
   return allocate('travel', state, hours);
 }
 
-export function allocateActivity(state: WeekState, hours: number): Result<WeekState> {
+export function allocateActivity(state: WeekState, hours: number): AllocationResult<WeekState> {
   return allocate('activity', state, hours);
 }

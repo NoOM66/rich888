@@ -33,10 +33,33 @@ Edge Cases:
 - Duplicate tag occurrences > frequency -> still counts fulfilled once
 
 Definition of Done Checkboxes:
-- [ ] Context
-- [ ] Acceptance Criteria (6)
-- [ ] Dependencies
-- [ ] No ambiguity
+- [x] Context
+- [x] Acceptance Criteria (6)
+- [x] Dependencies
+- [x] No ambiguity
+
+Implementation Notes:
+- Input: activityLog (entries with optional tags), obligationConfig[]
+- Count tags only from status OK / ADJUSTED
+- frequency=0 => skip entirely
+- Aggregate penalties per penaltyType; cap applied by min cap encountered among missed obligations (conservative)
+- Output stable ordering (sorted by penaltyType) for determinism
+- Missed array lists obligation ids (not tags)
+
+Data Shapes:
+- ObligationConfig: {id, tag, frequencyPerWeek, penaltyType, penaltyValue, capPerCategory}
+- Result: { missed:string[], penalties:[{type,value,appliedValue}], reportSummary:{missedCount,types,totalApplied} }
+
+Edge Handling:
+- Multiple missed same type => aggregated then capped
+- Duplicate tag appearances beyond frequency counted but extra ignored (>= suffices)
+
+Determinism:
+- Sorting penalties by type; freezing arrays
+
+DoD Verification:
+- Unit tests cover AC1..AC6 + edge cases (all missed, duplicates) in obligations.test.ts
+
 
 Test Notes:
 - test cap enforcement

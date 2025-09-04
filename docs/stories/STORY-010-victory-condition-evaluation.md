@@ -31,10 +31,15 @@ Edge Cases:
 - Bars exceed threshold -> still victory (no overflow effect)
 
 Definition of Done Checkboxes:
-- [ ] Context
-- [ ] Acceptance Criteria (6)
-- [ ] Dependencies
-- [ ] No ambiguity
+- [x] Context
+- [x] Acceptance Criteria (6)
+- [x] Dependencies
+- [x] No ambiguity
+
+Implementation Notes:
+- evaluateVictory เรียกหลัง summary (sequence) ไม่แก้ state
+- snapshot clone object เพื่อกันภายนอกแก้ค่า
+
 
 Test Notes:
 - idempotent call

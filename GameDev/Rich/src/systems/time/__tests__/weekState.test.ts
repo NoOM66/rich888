@@ -56,3 +56,32 @@ test('travel over limit rejects', () => {
   assert.equal(big.ok, false);
   assert.equal(getRemaining(w0), 40);
 });
+
+// 7. Negative hours allocation
+test('negative hours allocation rejects with NEGATIVE_OR_ZERO_HOURS', () => {
+  const w = initWeek(40, 0);
+  const neg = allocateActivity(w, -2);
+  assert.equal(neg.ok, false);
+  if (!neg.ok) assert.equal(neg.error.code, 'NEGATIVE_OR_ZERO_HOURS');
+});
+
+// 8. Zero hours allocation
+test('zero hours allocation rejects with NEGATIVE_OR_ZERO_HOURS', () => {
+  const w = initWeek(40, 0);
+  const zero = allocateTravel(w, 0);
+  assert.equal(zero.ok, false);
+  if (!zero.ok) assert.equal(zero.error.code, 'NEGATIVE_OR_ZERO_HOURS');
+});
+
+// 9. Immutability check (state object should be frozen)
+test('week state objects are frozen (immutable)', () => {
+  const w = initWeek(40, 5);
+  assert.throws(() => { (w as any).spentTravel = 99; }, /Cannot assign/);
+});
+
+// 10. Floor rounding precision (carryOverPenalty large)
+test('floor rounding precision keeps two decimals', () => {
+  const w = initWeek(37.7777, 1000); // huge penalty forces floor 10%
+  // 10% = 3.77777 -> rounded to 2 decimals = 3.78
+  assert.equal(w.effectiveHours, 3.78);
+});

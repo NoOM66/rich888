@@ -35,10 +35,10 @@ Edge Cases:
 - Loop back rapid exploit -> minHopTime enforce
 
 Definition of Done Checkboxes:
-- [ ] Context
-- [ ] Acceptance Criteria (6)
-- [ ] No ambiguous terms
-- [ ] Dependencies stated
+- [x] Context
+- [x] Acceptance Criteria (6)
+- [x] No ambiguous terms
+- [x] Dependencies stated
 
 Test Notes:
 - ทดสอบ hop < min -> clamp

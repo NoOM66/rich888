@@ -34,10 +34,23 @@ Edge Cases:
 - withdraw after many weeks -> compound correct
 
 Definition of Done Checkboxes:
-- [ ] Context
-- [ ] Acceptance Criteria (6)
-- [ ] Dependencies
-- [ ] No ambiguity
+- [x] Context
+- [x] Acceptance Criteria (6)
+- [x] Dependencies
+- [x] No ambiguity
+
+Implementation Notes:
+- ใช้ flat principal schedule: principalDue = original / termWeeks ต่อสัปดาห์
+- interest = principalRemaining * weeklyRate (simple interest per week)
+- เงินไม่พอชำระ totalDue -> ไม่ลด principal, set overdue=true, บวก penaltyRate (เพิ่มทั้ง interestAccumulated และ penaltyApplied)
+- investment มูลค่า = amount * (1 + growthRate)^weeksHeld (growthRate clamp >=0)
+- withdraw < 1 week -> FIN_MIN_HOLDING error
+- ใช้ shared Result pattern (ok/err)
+- State objects freeze เพื่อกัน mutation ตรง
+
+Further Integration (Next Story Candidates):
+- รวมกับ weeklyFlow เพื่อ sync bars.money ↔ financeState.money
+- รายงาน cashflow (paid interest, penalties, investment returns)
 
 Test Notes:
 - test overdue penalty
