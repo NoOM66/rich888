@@ -31,18 +31,10 @@ Edge Cases:
 - Empty plan -> netDeltas=0, timeUsage=0, warnings=[]
 
 Definition of Done Checkboxes:
-- [x] Context
-- [x] Acceptance Criteria (6)
-- [x] Dependencies
-- [x] No ambiguity
-
-Implementation Notes:
-- Pure arithmetic (no allocation) ใช้ timeEfficiency / rewardMultiplier เช่นเดียวกับระบบจริง
-- เรียก travel ผ่าน computeTravel (หากให้ locations) และส่ง travelTimeEfficiencyMultiplier
-- การเตือน MISSING_<tag> ใช้ obligationTags จาก input เทียบ tags กิจกรรมในแผน
-- OVER_TIME คำนวณจาก activityTime + travelTime > effectiveHours
-- expectedCost รวมฟิลด์ cost หากมี (ไม่บังคับใน ActivityDef ดั้งเดิม)
-- Deterministic: ไม่มี state writable ภายใน
+- [ ] Context
+- [ ] Acceptance Criteria (6)
+- [ ] Dependencies
+- [ ] No ambiguity
 
 Test Notes:
 - plan missing obligation

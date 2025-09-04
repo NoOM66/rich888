@@ -32,17 +32,10 @@ Edge Cases:
 - No upgrades -> upgradeROI=[]
 
 Definition of Done Checkboxes:
-- [x] Context
-- [x] Acceptance Criteria (6)
-- [x] Dependencies
-- [x] No ambiguity
-
-Implementation Notes:
-- buildWeekSummary เป็น pure function (ไม่เปลี่ยน executionLog/payload)
-- grouping แค่ตั้ง flag (อนาคตอาจ aggregate ตาม category)
-- advisory ปัจจุบันใช้เกณฑ์ summation ของ resourceTotals ทั้งหมด < 0 (อาจขยาย rule set ภายหลัง)
-- upgradeROI: รวม benefit values / cost แล้วปัด 4 ทศนิยม
-
+- [ ] Context
+- [ ] Acceptance Criteria (6)
+- [ ] Dependencies
+- [ ] No ambiguity
 
 Test Notes:
 - test grouping

@@ -33,25 +33,10 @@ Edge Cases:
 - large negative money -> clamp then overdraft
 
 Definition of Done Checkboxes:
-- [x] Context
-- [x] Acceptance Criteria (6)
-- [x] Dependencies
-- [x] No ambiguity
-
-Implementation Notes:
-- applyDeltas(current, deltas, thresholds) returns { bars, completionFlags, debtOverdraft }
-- debtOverdraft evaluated on pre-clamp money
-- multipliers param reserved (ignored) for STORY-006
-- Output bars object is frozen (immutable)
-- Deterministic rounding to 2 decimals, consistent with time system
-
-Error Handling:
-- Threshold <= 0 throws (defensive)
-
-DoD Verification Summary:
-- AC1..AC6 covered by unit tests in statusBars.test.ts
-- Edge cases: all complete, large negative money
-- Pure & input immutability verified
+- [ ] Context
+- [ ] Acceptance Criteria (6)
+- [ ] Dependencies
+- [ ] No ambiguity
 
 Test Notes:
 - immutability check (reference compare)

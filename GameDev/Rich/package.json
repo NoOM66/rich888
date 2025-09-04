@@ -6,10 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node --test --loader ts-node/esm",
-    "lint": "eslint . --ext .ts",
-    "demo": "node --loader ts-node/esm src/demo/weekDemo.ts",
-    "dev": "vite",
-    "preview": "vite preview"
+  "lint": "eslint . --ext .ts",
+  "demo": "node --loader ts-node/esm src/demo/weekDemo.ts"
   },
   "dependencies": {},
   "devDependencies": {
@@ -18,7 +16,6 @@
     "@types/node": "^20.11.0",
     "eslint": "^8.56.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "vite": "^5.2.0"
+    "@typescript-eslint/eslint-plugin": "^6.21.0"
   }
 }
